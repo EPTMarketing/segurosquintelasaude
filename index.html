@@ -195,42 +195,20 @@ window.addEventListener('load', function () {
 </div>
 </div>
 </div><script fetchpriority="high" src="./seguro-saude_files/jquery-3-6-0.min.js.téléchargement" type="text/javascript"></script><script defer="" src="./seguro-saude_files/030724-anchors.js.téléchargement" type="text/javascript"></script> 
-<script>
-const lpStatsModule = (function () {    
-    const url = "https://stats.landingi.com/visit/1999257";
-    const data = {"lid":1999257,"luuid":"8d272d44-af08-45f3-937c-187ac50924dc","lhash":"16e8aad13a0bfb13ffc2","fid":1999257,"auuid":"3b265ce8-fcc7-11ed-b2d3-6ae21a994b6e","acid":288956,"agid":null,"tid":null,"hasAccessToEventTracker":false,"hasAccessToEventTrackerDev":false,"hasAccessToVisitWithoutCookie":false,"hasAccessToExternalEvents":false};
-    const cookieName = "ls_sid_1999257";
-
-    if (data.hasAccessToEventTrackerDev) { 
-        console.log('Running runScript in dev mode')
-        frodo.runScriptDev(cookieName, url, data)
-    } else {
-        frodo.runScript(cookieName, url, data)
-    }
-
-    return {
-        getData: function() { return data; },
-        cookieName: function() { return cookieName; },
-        endpoint: function() { return url; },
-        path: function() { return path; }
-    };
-})();
-</script> <div></div><script>
+<div></div><script>
 (function () {
   const FORM_ID = 'iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF';
   const FORM_NAME = 'seguro-saude';
   const SUCCESS_URL = '/send.html';
-
-  function encode(data) {
-    return new URLSearchParams(data).toString();
-  }
 
   function setButtonText(button, text) {
     if (!button) return;
     const overlay = button.querySelector('.widget-overlay');
     if (overlay) overlay.innerHTML = '';
     button.style.color = '';
-    const textNodes = Array.from(button.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    const textNodes = Array.from(button.childNodes).filter(function (node) {
+      return node.nodeType === Node.TEXT_NODE && node.textContent.trim();
+    });
     if (textNodes.length) {
       textNodes[0].textContent = text;
     } else {
@@ -238,16 +216,39 @@ const lpStatsModule = (function () {
     }
   }
 
-  function init() {
+  function ensureHiddenInput(form, name, value) {
+    let input = form.querySelector('input[name="' + name + '"]');
+    if (!input) {
+      input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      form.prepend(input);
+    }
+    input.value = value;
+  }
+
+  function initNetlifyNativeForm() {
     const form = document.getElementById(FORM_ID);
-    if (!form || form.dataset.netlifyReady === 'true') return;
-    form.dataset.netlifyReady = 'true';
+    if (!form || form.dataset.netlifyNativeReady === 'true') return;
+    form.dataset.netlifyNativeReady = 'true';
 
     form.setAttribute('name', FORM_NAME);
     form.setAttribute('method', 'POST');
-    form.setAttribute('data-netlify', 'true');
     form.setAttribute('action', SUCCESS_URL);
+    form.setAttribute('data-netlify', 'true');
+    form.setAttribute('netlify', 'true');
+    form.setAttribute('netlify-honeypot', 'bot-field');
     form.removeAttribute('novalidate');
+    form.removeAttribute('enctype');
+
+    ensureHiddenInput(form, 'form-name', FORM_NAME);
+
+    if (!form.querySelector('input[name="bot-field"]')) {
+      const p = document.createElement('p');
+      p.style.display = 'none';
+      p.innerHTML = '<label>Não preencher: <input name="bot-field"></label>';
+      form.prepend(p);
+    }
 
     form.querySelectorAll('input, select, textarea').forEach(function (field) {
       const type = (field.getAttribute('type') || '').toLowerCase();
@@ -257,51 +258,29 @@ const lpStatsModule = (function () {
       }
     });
 
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
-      event.stopPropagation();
+    form.addEventListener('submit', function (event) {
+      if (!form.reportValidity()) {
+        event.preventDefault();
+        return false;
+      }
+
+      // Bloqueia scripts antigos da plataforma, mas deixa o envio nativo do browser acontecer.
       event.stopImmediatePropagation();
 
-      if (!form.reportValidity()) return false;
-
       const button = form.querySelector('button[type="submit"], input[type="submit"]');
-      const originalText = button ? (button.getAttribute('data-origin-label') || button.textContent.trim() || 'Enviar Pedido') : '';
       if (button) {
         button.disabled = true;
         setButtonText(button, 'A enviar...');
       }
 
-      const formData = new FormData(form);
-      formData.set('form-name', FORM_NAME);
-
-      try {
-        const response = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: encode(formData)
-        });
-
-        if (response.ok) {
-          window.location.href = SUCCESS_URL;
-          return true;
-        }
-        throw new Error('Netlify respondeu com erro: ' + response.status);
-      } catch (error) {
-        console.error(error);
-        alert('Ocorreu um erro ao enviar o formulário. Por favor, tente novamente.');
-        if (button) {
-          button.disabled = false;
-          setButtonText(button, originalText);
-        }
-        return false;
-      }
+      return true;
     }, true);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', initNetlifyNativeForm);
   } else {
-    init();
+    initNetlifyNativeForm();
   }
 })();
 </script></body></html>
