@@ -1,24 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pedido enviado</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obrigado</title>
+
   <style>
-    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f7f7f7;font-family:Montserrat,Arial,sans-serif;color:#1f1f1f;padding:24px;box-sizing:border-box;text-align:center}
-    .card{max-width:560px;background:#fff;border-radius:18px;padding:42px 28px;box-shadow:0 12px 35px rgba(0,0,0,.08)}
-    h1{margin:0 0 14px;font-size:30px;line-height:1.2}
-    p{margin:0 0 26px;font-size:17px;line-height:1.5}
-    a{display:inline-block;background:#1f1f1f;color:#fff;text-decoration:none;border-radius:999px;padding:13px 24px;font-weight:700}
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#ffffff;
+      color:#333;
+      display:flex;
+      justify-content:center;
+      text-align:center;
+      padding:50px 20px;
+    }
+
+    .container{
+      max-width:900px;
+      width:100%;
+    }
+
+    .logo{
+      width:180px;
+      margin-bottom:45px;
+    }
+
+    h1{
+      font-size:36px;
+      line-height:1.2;
+      margin:0 0 20px;
+      font-weight:700;
+    }
+
+    .subtitle{
+      font-size:22px;
+      margin-bottom:50px;
+    }
+
+    .contact{
+      font-size:19px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
+    .small{
+      font-size:15px;
+      font-weight:400;
+    }
+
+    @media(max-width:768px){
+      .logo{
+        width:130px;
+        margin-bottom:30px;
+      }
+
+      h1{
+        font-size:24px;
+      }
+
+      .subtitle{
+        font-size:16px;
+        margin-bottom:30px;
+      }
+
+      .contact{
+        font-size:14px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <main class="card">
-    <h1>Pedido enviado com sucesso</h1>
-    <p>Obrigado. Recebemos o seu pedido e entraremos em contacto brevemente.</p>
-    <a href="/">Voltar à página inicial</a>
-  </main>
+
+  <div class="container">
+
+    <img
+      class="logo"
+      src="seguro-saude_files/1-removebg-preview.png"
+      alt="Quintela Seguros"
+    >
+
+    <h1>Obrigado. Iremos contactá-lo brevemente.</h1>
+
+    <div class="subtitle">
+      Para mais informações, consulte o nosso site www.seguros-saude.pt
+    </div>
+
+    <div class="contact">
+      Telefone: (+351) 962 895 467<br>
+      E-mail: danielquintela@quintelasic.com<br>
+      <span class="small">(Chamada para a rede móvel nacional)</span>
+    </div>
+
+  </div>
+
 </body>
 </html>
