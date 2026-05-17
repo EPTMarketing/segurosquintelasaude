@@ -209,7 +209,8 @@ select option {
 </div>
 </div>
 </div><script fetchpriority="high" src="./seguro-saude_files/jquery-3-6-0.min.js.téléchargement" type="text/javascript"></script><script defer="" src="./seguro-saude_files/030724-anchors.js.téléchargement" type="text/javascript"></script> 
-<div></div><script>
+<div></div>
+<script>
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.accordion-heading-container').forEach(function (heading) {
     heading.addEventListener('click', function () {
@@ -246,18 +247,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF");
+  const FORM_ID = "iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF";
+  const CRM_ENDPOINT = "https://crmeptmarketing.netlify.app/.netlify/functions/add-lead";
+  const SUCCESS_URL = "/send.html";
 
-  if (!form) return;
+  const form = document.getElementById(FORM_ID);
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
+  if (!form) {
+    console.log("FORM NÃO ENCONTRADO");
+    return;
+  }
+
+  console.log("CRM SCRIPT CARREGADO");
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
     if (!form.reportValidity()) return;
 
     const button = form.querySelector('button[type="submit"], input[type="submit"]');
-    const originalButtonText = button ? button.textContent : "";
+    const originalButtonText = button ? button.textContent : "Enviar Pedido";
 
     if (button) {
       button.disabled = true;
@@ -266,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(form);
 
-    const data = {
+    const leadData = {
       client: "Seguros Quintela",
       campaign: "Saúde",
       name: formData.get("name") || "",
@@ -281,19 +291,23 @@ document.addEventListener("DOMContentLoaded", function () {
       raw_data: Object.fromEntries(formData.entries())
     };
 
+    console.log("LEAD DATA:", leadData);
+
     try {
-      await fetch("https://crmeptmarketing.netlify.app/.netlify/functions/add-lead", {
+      await fetch(CRM_ENDPOINT, {
         method: "POST",
         mode: "no-cors",
         headers: {
           "Content-Type": "text/plain;charset=UTF-8"
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(leadData),
+        keepalive: true
       });
 
-      window.location.href = "/send.html";
+      console.log("PEDIDO CRM ENVIADO");
+      window.location.href = SUCCESS_URL;
     } catch (error) {
-      console.error("Erro ao enviar lead para o CRM:", error);
+      console.error("ERRO AO ENVIAR PARA CRM:", error);
       alert("Erro ao enviar. Tente novamente.");
 
       if (button) {
@@ -303,46 +317,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }, true);
 });
-</script><script>
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("CRM SCRIPT CARREGADO");
-
-  const form = document.getElementById("iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF");
-
-  if (!form) {
-    console.log("FORM NÃO ENCONTRADO");
-    return;
-  }
-
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    console.log("LEAD DATA: submit detetado");
-
-    const formData = new FormData(form);
-
-    const data = {
-      client: "Seguros Quintela",
-      campaign: "Saúde",
-      name: formData.get("name") || "",
-      phone: formData.get("telefone") || "",
-      email: formData.get("email") || "",
-      birth_date: formData.get("data_de_nascimento") || "",
-      postal_code: formData.get("c__digo_postal") || "",
-      holders_number: formData.get("n___pessoas_seguras") || "",
-      source: "Landing Page Netlify"
-    };
-
-    await fetch("https://crmeptmarketing.netlify.app/.netlify/functions/add-lead", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    window.location.href = "/send.html";
-  });
-});
 </script>
+
 </body></html>
