@@ -294,18 +294,24 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("LEAD DATA:", leadData);
 
     try {
-      await fetch(CRM_ENDPOINT, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "text/plain;charset=UTF-8"
-        },
-        body: JSON.stringify(leadData),
-        keepalive: true
-      });
+      const response = await fetch(CRM_ENDPOINT, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(leadData)
+});
 
-      console.log("PEDIDO CRM ENVIADO");
-      window.location.href = SUCCESS_URL;
+const result = await response.json();
+
+console.log("CRM RESPONSE:", result);
+
+      if (response.ok) {
+  console.log("LEAD ENVIADA PARA CRM");
+  window.location.href = SUCCESS_URL;
+} else {
+  console.error("ERRO CRM:", result);
+}
     } catch (error) {
       console.error("ERRO AO ENVIAR PARA CRM:", error);
       alert("Erro ao enviar. Tente novamente.");
