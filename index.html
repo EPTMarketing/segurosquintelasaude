@@ -209,7 +209,110 @@ select option {
 </div>
 </div>
 </div><script fetchpriority="high" src="./seguro-saude_files/jquery-3-6-0.min.js.téléchargement" type="text/javascript"></script><script defer="" src="./seguro-saude_files/030724-anchors.js.téléchargement" type="text/javascript"></script> 
-<div></div>
+<div></div><script>
+(function () {
+  const FORM_ID = 'iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF';
+  const CRM_ENDPOINT = 'https://crmeptmarketing.netlify.app/.netlify/functions/add-lead';
+  const SUCCESS_URL = '/send.html';
+
+  function setButtonText(button, text) {
+    if (!button) return;
+    const overlay = button.querySelector('.widget-overlay');
+    if (overlay) overlay.innerHTML = '';
+    button.style.color = '';
+
+    const textNodes = Array.from(button.childNodes).filter(function (node) {
+      return node.nodeType === Node.TEXT_NODE && node.textContent.trim();
+    });
+
+    if (textNodes.length) {
+      textNodes[0].textContent = text;
+    } else {
+      button.appendChild(document.createTextNode(text));
+    }
+  }
+
+  function initCrmSubmit() {
+    const form = document.getElementById(FORM_ID);
+    if (!form || form.dataset.crmReady === 'true') return;
+
+    form.dataset.crmReady = 'true';
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      if (!form.reportValidity()) return;
+
+      const button = form.querySelector('button[type="submit"], input[type="submit"]');
+      const originalButtonText = button ? (button.textContent || 'Enviar Pedido') : 'Enviar Pedido';
+
+      if (button) {
+        button.disabled = true;
+        setButtonText(button, 'A enviar...');
+      }
+
+      const formData = new FormData(form);
+
+      const leadData = {
+        client: 'Seguros Quintela',
+        campaign: 'Saúde',
+        name: formData.get('name') || '',
+        phone: formData.get('telefone') || '',
+        email: formData.get('email') || '',
+        birth_date: formData.get('data_de_nascimento') || '',
+        postal_code: formData.get('c__digo_postal') || '',
+        holders_number: formData.get('n___pessoas_seguras') || '',
+        observations: formData.get('select') || '',
+        status: 'Novo',
+        source: 'Landing Page Netlify',
+        raw_data: Object.fromEntries(formData.entries())
+      };
+
+      try {
+        const response = await fetch(CRM_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(leadData)
+        });
+
+        let result = null;
+
+        try {
+          result = await response.json();
+        } catch (error) {
+          result = await response.text();
+        }
+
+        console.log('CRM STATUS:', response.status);
+        console.log('CRM RESPONSE:', result);
+
+        if (!response.ok) {
+          throw new Error('Erro CRM: ' + response.status);
+        }
+
+        window.location.href = SUCCESS_URL;
+      } catch (error) {
+        console.error('ERRO AO ENVIAR PARA CRM:', error);
+        alert('Erro ao enviar. Tente novamente.');
+
+        if (button) {
+          button.disabled = false;
+          setButtonText(button, originalButtonText);
+        }
+      }
+    }, true);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCrmSubmit);
+  } else {
+    initCrmSubmit();
+  }
+})();
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.accordion-heading-container').forEach(function (heading) {
@@ -244,85 +347,4 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const FORM_ID = "iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF";
-  const CRM_ENDPOINT = "https://crmeptmarketing.netlify.app/.netlify/functions/add-lead";
-  const SUCCESS_URL = "/send.html";
-
-  const form = document.getElementById(FORM_ID);
-
-  if (!form) {
-    console.log("FORM NÃO ENCONTRADO");
-    return;
-  }
-
-  console.log("CRM SCRIPT CARREGADO");
-
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    if (!form.reportValidity()) return;
-
-    const button = form.querySelector('button[type="submit"], input[type="submit"]');
-    const originalButtonText = button ? button.textContent : "Enviar Pedido";
-
-    if (button) {
-      button.disabled = true;
-      button.textContent = "A enviar...";
-    }
-
-    const formData = new FormData(form);
-
-    const leadData = {
-      client: "Seguros Quintela",
-      campaign: "Saúde",
-      name: formData.get("name") || "",
-      phone: formData.get("telefone") || "",
-      email: formData.get("email") || "",
-      birth_date: formData.get("data_de_nascimento") || "",
-      postal_code: formData.get("c__digo_postal") || "",
-      holders_number: formData.get("n___pessoas_seguras") || "",
-      observations: formData.get("select") || "",
-      status: "Novo",
-      source: "Landing Page Netlify",
-      raw_data: Object.fromEntries(formData.entries())
-    };
-
-    console.log("LEAD DATA:", leadData);
-
-    try {
-      const response = await fetch(CRM_ENDPOINT, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(leadData)
-});
-
-const result = await response.json();
-
-console.log("CRM RESPONSE:", result);
-
-      if (response.ok) {
-  console.log("LEAD ENVIADA PARA CRM");
-  window.location.href = SUCCESS_URL;
-} else {
-  console.error("ERRO CRM:", result);
-}
-    } catch (error) {
-      console.error("ERRO AO ENVIAR PARA CRM:", error);
-      alert("Erro ao enviar. Tente novamente.");
-
-      if (button) {
-        button.disabled = false;
-        button.textContent = originalButtonText || "Enviar Pedido";
-      }
-    }
-  }, true);
-});
-</script>
-
 </body></html>
