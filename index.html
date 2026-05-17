@@ -303,5 +303,46 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }, true);
 });
+</script><script>
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("CRM SCRIPT CARREGADO");
+
+  const form = document.getElementById("iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF");
+
+  if (!form) {
+    console.log("FORM NÃO ENCONTRADO");
+    return;
+  }
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    console.log("LEAD DATA: submit detetado");
+
+    const formData = new FormData(form);
+
+    const data = {
+      client: "Seguros Quintela",
+      campaign: "Saúde",
+      name: formData.get("name") || "",
+      phone: formData.get("telefone") || "",
+      email: formData.get("email") || "",
+      birth_date: formData.get("data_de_nascimento") || "",
+      postal_code: formData.get("c__digo_postal") || "",
+      holders_number: formData.get("n___pessoas_seguras") || "",
+      source: "Landing Page Netlify"
+    };
+
+    await fetch("https://crmeptmarketing.netlify.app/.netlify/functions/add-lead", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    window.location.href = "/send.html";
+  });
+});
 </script>
 </body></html>
