@@ -335,14 +335,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
-  const form = document.querySelector('form[name="seguro-saude"]');
+  const form = document.getElementById("iBQT92kivx45Dwp4Kf8AcvcilTO3JgzF");
 
   if (!form) return;
 
   form.addEventListener("submit", async function (e) {
-
     e.preventDefault();
+    e.stopImmediatePropagation();
 
     const formData = new FormData(form);
 
@@ -358,28 +357,16 @@ document.addEventListener("DOMContentLoaded", function () {
       source: "Landing Page Netlify"
     };
 
-    try {
+    await fetch("https://crmeptmarketing.netlify.app/.netlify/functions/add-lead", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
 
-      await fetch("/.netlify/functions/add-lead", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      window.location.href = "/send.html";
-
-    } catch (error) {
-
-      console.error(error);
-      alert("Erro ao enviar.");
-
-    }
-
-  });
-
+    window.location.href = "/send.html";
+  }, true);
 });
 </script>
-
 </body></html>
