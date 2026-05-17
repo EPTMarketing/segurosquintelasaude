@@ -332,4 +332,44 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector('form[name="seguro-saude"]');
+
+  if (!form) return;
+
+  form.addEventListener("submit", async function () {
+    try {
+      const formData = new FormData(form);
+
+      const data = {
+        client: "Seguros Quintela",
+        campaign: "Saúde",
+        name: formData.get("name") || "",
+        phone: formData.get("telefone") || "",
+        email: formData.get("email") || "",
+        status: "Nova",
+        source: "Landing Page",
+        raw_data: Object.fromEntries(formData.entries())
+      };
+
+      fetch("/.netlify/functions/add-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  });
+});
+</script>
+
+</body>
+</html>
+
 </body></html>
